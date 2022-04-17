@@ -28,8 +28,15 @@ function drawBoard () {
     echo " |       |       #       |       | "
     case "$1" in
         0)
-            if [[ $prevState -eq -1 ]]; then echo " |       |       #   O   |       | " 
+            if [[ $prevState -eq -1 ]]
+            then
+            echo " |       |       #   O   |       | " 
+            state=1
+            elif [[ $prevState -eq 0 ]]
+            then
+            echo " |       |       O       |       | " 
             else echo " |       |   O   #       |       | "
+            state=-1
             fi
             ;;
         -3)
@@ -126,12 +133,21 @@ function checkWinCond() {
     then
     echo "PLAYER 1 WINS !"
     end=true
-    echo $end
     return
 
     elif [[ $player2 -le 0 && $player1 -le 0 ]]
     then
+    case $state in
+    -3|-2|-1)
+    echo "PLAYER 2 WINS !"
+    ;;
+    3|2|1)
+    echo "PLAYER 1 WINS !"
+    ;;
+    0)
     echo "IT'S A DRAW !"
+    ;;
+    esac
     end=true
     return
 
