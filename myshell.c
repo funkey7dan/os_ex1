@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/syscall.h>
 
 void myShell(void) {
     const char *env = getenv("PATH");
@@ -11,6 +12,7 @@ void myShell(void) {
     char commandHistory[100][100];
     int index = 0;
     pid_t process1;
+    pid_t selfpid = getpid();
 
     // the main loop of the shell
     while (stop == 0) {
@@ -41,36 +43,57 @@ void myShell(void) {
         }
         //strcpy(arguments[j], "\0");
         arguments[j-1] = NULL;
-        strcpy(commandHistory[index], command);
+
         // commandHistory[index] = *(command);
-        index++;
+
         if (strcmp(command, "exit") == 0) {
             stop = 1;
         } else if (strcmp(command, "history") == 0) {
+            char temp[106]={0};
+            sprintf(temp,"%d",selfpid);
+            strcat(temp," ");
+            strcat(temp,command);
+            strcpy(commandHistory[index], temp);
+            index++;
             for (int i = 0; i <= index; i++) {
                 // check if the string is terminated with \n
                 printf("%s\n", commandHistory[i]);
             }
         } else if (strcmp(command, "cd") == 0) {
-
+            char temp[106]={0};
+            sprintf(temp,"%d",selfpid);
+            strcat(temp," ");
+            strcat(temp,command);
+            strcpy(commandHistory[index], temp);
+            index++;
             if (chdir(arguments[1]) != 0) {
-                perror("chdir failed!");
+                perror("chdir failed");
             }
         } else {
             process1 = fork();
             //if the fork is successful and we are in child process
             if (process1 == 0) {
-                if (execvp(command, arguments) != 0) {
-                    perror("Command failed!");
-                }
+//                if (execvp(command, arguments) != 0) {
+//                    perror(error);
+//                }
+                execvp(command, arguments);
                 for( int i=0; i<100; i++ ) {
                     free(arguments[i]);
                 }
                 free(arguments);
             }
+            else if(process1==-1){
+                perror("fork failed");
+            }
             // parent process
             else {
-                wait(process1);
+                char temp[106]={0};
+                sprintf(temp,"%d",process1);
+                strcat(temp," ");
+                strcat(temp,command);
+                strcpy(commandHistory[index], temp);
+                index++;
+                wait(&process1);
             }
 
         }

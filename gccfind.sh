@@ -14,7 +14,6 @@ case $1 in
     path="$1"
     ;;
 *)
-    echo "doesn't have a slash"
     path="$1/"
     ;;
 esac
