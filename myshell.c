@@ -5,19 +5,16 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <sys/syscall.h>
 
 void myShell(void) {
 
-    //printf("%s\n",env);
-    int stop = 0; // the variable to stop the loop
     char commandHistory[100][100];
     int index = 0;
-    pid_t process1;
-    pid_t selfpid = getpid();
+    int process1;
+    int selfpid = getpid();
 
     // the main loop of the shell
-    while (stop == 0) {
+    while (1) {
         char *token;
         char *command;
         char commandBuffer[100] = {0};
@@ -43,13 +40,9 @@ void myShell(void) {
             }
             j++;
         }
-        //strcpy(arguments[j], "\0");
         arguments[j-1] = NULL;
 
-        // commandHistory[index] = *(command);
-
         if (strcmp(command, "exit") == 0) {
-            stop = 1;
             break;
         }
         else if (strcmp(command, "history") == 0) {
@@ -67,8 +60,8 @@ void myShell(void) {
             char temp[106]={0};
             sprintf(temp,"%d",selfpid);
             strcat(temp," ");
-            //strcat(temp,command);
-            for(int i=0;i<100;i++){
+            int i;
+            for(i=0;i<100;i++){
                 if(arguments[i]==NULL)break;
                 strcat(temp,arguments[i]);
                 strcat(temp," ");
@@ -100,8 +93,8 @@ void myShell(void) {
                 char temp[106]={0};
                 sprintf(temp,"%d",process1);
                 strcat(temp," ");
-                //strcat(temp,command);
-                for(int i=0;i<100;i++){
+                int i;
+                for(i=0;i<100;i++){
                     if(arguments[i]==NULL)break;
                     strcat(temp,arguments[i]);
                     strcat(temp," ");
@@ -117,7 +110,8 @@ void myShell(void) {
 
 int main(int argc, char *argv[]) {
     char *env = getenv("PATH");
-    for(int i=0;i<argc;i++){
+    int i;
+    for(i=0;i<argc;i++){
         strcat(env,":");
         strcat(env,argv[i]);
     }
