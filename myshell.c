@@ -18,9 +18,10 @@ void myShell(void) {
         char *token;
         char *command;
         char commandBuffer[100] = {0};
-        char** arguments = (char**) calloc(100,sizeof(char*));
-        for( int i=0; i<100; i++ ) {
-            arguments[i] = (char*)malloc(101);
+        char **arguments = (char **) calloc(100, sizeof(char *));
+        int i;
+        for (i = 0; i < 100; i++) {
+            arguments[i] = (char *) malloc(101);
         }
 
         // prompt user for input
@@ -40,31 +41,31 @@ void myShell(void) {
             }
             j++;
         }
-        arguments[j-1] = NULL;
+        arguments[j - 1] = NULL;
 
         if (strcmp(command, "exit") == 0) {
             break;
-        }
-        else if (strcmp(command, "history") == 0) {
-        char temp[106]={0};
-        sprintf(temp,"%d",selfpid);
-        strcat(temp," ");
-        strcat(temp,command);
-        strcpy(commandHistory[index], temp);
-        index++;
-        for (int i = 0; i <= index; i++) {
-            // check if the string is terminated with \n
-            printf("%s\n", commandHistory[i]);
-        }
-        } else if (strcmp(command, "cd") == 0) {
-            char temp[106]={0};
-            sprintf(temp,"%d",selfpid);
-            strcat(temp," ");
+        } else if (strcmp(command, "history") == 0) {
+            char temp[106] = {0};
+            sprintf(temp, "%d", selfpid);
+            strcat(temp, " ");
+            strcat(temp, command);
+            strcpy(commandHistory[index], temp);
+            index++;
             int i;
-            for(i=0;i<100;i++){
-                if(arguments[i]==NULL)break;
-                strcat(temp,arguments[i]);
-                strcat(temp," ");
+            for (i = 0; i <= index; i++) {
+                // check if the string is terminated with \n
+                printf("%s\n", commandHistory[i]);
+            }
+        } else if (strcmp(command, "cd") == 0) {
+            char temp[106] = {0};
+            sprintf(temp, "%d", selfpid);
+            strcat(temp, " ");
+            int i;
+            for (i = 0; i < 100; i++) {
+                if (arguments[i] == NULL)break;
+                strcat(temp, arguments[i]);
+                strcat(temp, " ");
             }
             strcpy(commandHistory[index], temp);
             index++;
@@ -79,25 +80,25 @@ void myShell(void) {
                     perror("execvp failed");
                 }
                 //execvp(command, arguments);
-                for( int i=0; i<100; i++ ) {
+                int i;
+                for (i = 0; i < 100; i++) {
                     free(arguments[i]);
                 }
                 free(arguments);
                 return;
-            }
-            else if(process1==-1){
+            } else if (process1 == -1) {
                 perror("fork failed");
             }
-            // parent process
+                // parent process
             else {
-                char temp[106]={0};
-                sprintf(temp,"%d",process1);
-                strcat(temp," ");
+                char temp[106] = {0};
+                sprintf(temp, "%d", process1);
+                strcat(temp, " ");
                 int i;
-                for(i=0;i<100;i++){
-                    if(arguments[i]==NULL)break;
-                    strcat(temp,arguments[i]);
-                    strcat(temp," ");
+                for (i = 0; i < 100; i++) {
+                    if (arguments[i] == NULL)break;
+                    strcat(temp, arguments[i]);
+                    strcat(temp, " ");
                 }
                 strcpy(commandHistory[index], temp);
                 index++;
@@ -111,11 +112,11 @@ void myShell(void) {
 int main(int argc, char *argv[]) {
     char *env = getenv("PATH");
     int i;
-    for(i=0;i<argc;i++){
-        strcat(env,":");
-        strcat(env,argv[i]);
+    for (i = 0; i < argc; i++) {
+        strcat(env, ":");
+        strcat(env, argv[i]);
     }
-    setenv("PATH",env,1);
+    setenv("PATH", env, 1);
 
     myShell();
     return 0;
