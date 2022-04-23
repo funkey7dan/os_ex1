@@ -40,7 +40,7 @@ fi
 ### compile all the c files section ###
 for file in "$path"*; do
     [ -e "$file" ] || continue
-    if [[ $file == *.c ]] && grep -q -i $2 "$file"
+    if [[ $file == *.c ]] && grep -q -i -w $2 "$file"
     then
         gcc -w $file -o ${file%%.c}.out #strip the file extension
     fi

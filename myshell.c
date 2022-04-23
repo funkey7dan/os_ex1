@@ -9,7 +9,7 @@
 void myShell(void) {
 
     char commandHistory[100][100];
-    int index = 0;
+    int index = 0; // current index in the history array
     int process1;
     int selfpid = getpid();
 
@@ -47,6 +47,7 @@ void myShell(void) {
             break;
         } else if (strcmp(command, "history") == 0) {
             char temp[106] = {0};
+            // add the command with the pid to the history before showing the history
             sprintf(temp, "%d", selfpid);
             strcat(temp, " ");
             strcat(temp, command);
@@ -54,7 +55,6 @@ void myShell(void) {
             index++;
             int i;
             for (i = 0; i <= index; i++) {
-                // check if the string is terminated with \n
                 printf("%s\n", commandHistory[i]);
             }
         } else if (strcmp(command, "cd") == 0) {
@@ -74,12 +74,23 @@ void myShell(void) {
             }
         } else {
             process1 = fork();
+            char temp[106] = {0};
+            // convert the pid of the process to int and add a space
+            sprintf(temp, "%d", process1);
+            strcat(temp, " ");
+            int i;
+            for (i = 0; i < 100; i++) {
+                if (arguments[i] == NULL)break;
+                strcat(temp, arguments[i]);
+                strcat(temp, " ");
+            }
+            strcpy(commandHistory[index], temp);
+            index++;
             //if the fork is successful and we are in child process
             if (process1 == 0) {
                 if (execvp(command, arguments) != 0) {
                     perror("execvp failed");
                 }
-                //execvp(command, arguments);
                 int i;
                 for (i = 0; i < 100; i++) {
                     free(arguments[i]);
@@ -91,17 +102,7 @@ void myShell(void) {
             }
                 // parent process
             else {
-                char temp[106] = {0};
-                sprintf(temp, "%d", process1);
-                strcat(temp, " ");
-                int i;
-                for (i = 0; i < 100; i++) {
-                    if (arguments[i] == NULL)break;
-                    strcat(temp, arguments[i]);
-                    strcat(temp, " ");
-                }
-                strcpy(commandHistory[index], temp);
-                index++;
+
                 wait(&process1);
             }
 

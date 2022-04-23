@@ -75,16 +75,25 @@ function drawBoard () {
 function checkState() {
     let "player1-=$1"
     let "player2-=$2"
-    if   [[ $2 -gt $1 ]]
+    if   [[ $2 -gt $1 ]] # player 2 (right hand) scored higher
     then
     prevState=$state
-    let "state-=1"
-    
-    elif [[ $1 -gt $2 ]]
+    if [[ $state -ge 0 ]] # if the ball is in the right court or on the net, it goes to the first part of player 1
     then
-    prevState=$state
-    let "state+=1"
+    state=-1
+    else
+    let "state-=1" #otherwise it's already at the losing players court, and we push it deeper
+    fi
 
+    elif [[ $1 -gt $2 ]] # player 1 (left hand) scored higher
+    then
+    prevState=$state
+    if [[ $state -le 0 ]] # if the ball is in the left court or on the net, it goes to the first part of player 2
+    then
+    state=1
+    else
+    let "state+=1" #otherwise it's already at the losing players court, and we push it deeper
+    fi
     fi
 }
 
@@ -158,6 +167,7 @@ function checkWinCond() {
     esac
 }
 
+### 'main' loop of the script
 init
 while : ; do
 checkWinCond
