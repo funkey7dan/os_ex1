@@ -44,16 +44,24 @@ void myShell(void) {
         arguments[j - 1] = NULL;
 
         if (strcmp(command, "exit") == 0) {
+            for (i = 0; i < 100; i++) {
+                free(arguments[i]);
+            }
+            free(arguments);
             break;
-        } else if (strcmp(command, "history") == 0) {
+        }
+        else if (strcmp(command, "history") == 0) {
             char temp[106] = {0};
-            // add the command with the pid to the history before showing the history
             sprintf(temp, "%d", selfpid);
             strcat(temp, " ");
-            strcat(temp, command);
+            int i;
+            for (i = 0; i < 100; i++) {
+                if (arguments[i] == NULL)break;
+                strcat(temp, arguments[i]);
+                strcat(temp, " ");
+            }
             strcpy(commandHistory[index], temp);
             index++;
-            int i;
             for (i = 0; i <= index; i++) {
                 printf("%s\n", commandHistory[i]);
             }
@@ -72,7 +80,8 @@ void myShell(void) {
             if (chdir(arguments[1]) != 0) {
                 perror("chdir failed");
             }
-        } else {
+        }
+        else {
             process1 = fork();
             char temp[106] = {0};
             // convert the pid of the process to int and add a space
@@ -99,13 +108,15 @@ void myShell(void) {
                 return;
             } else if (process1 == -1) {
                 perror("fork failed");
+                for (i = 0; i < 100; i++) {
+                    free(arguments[i]);
+                }
+                free(arguments);
             }
                 // parent process
             else {
-
                 wait(&process1);
             }
-
         }
     }
 }
