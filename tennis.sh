@@ -1,5 +1,5 @@
 #!/bin/bash
-#Daniel Bronfman ***REMOVED***
+#Daniel Bronfman 
 
 
 player1=50
