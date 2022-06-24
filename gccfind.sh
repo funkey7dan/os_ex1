@@ -1,5 +1,5 @@
 #!/bin/bash
-#Daniel Bronfman ***REMOVED***
+#Daniel Bronfman 
 
 shopt -s globstar # enable shell option for wildcard folders matching
 
